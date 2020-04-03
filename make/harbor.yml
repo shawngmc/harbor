@@ -2,7 +2,7 @@
 
 # The IP address or hostname to access admin UI and registry service.
 # DO NOT use localhost or 127.0.0.1, because Harbor needs to be accessed by external clients.
-hostname: reg.mydomain.com
+hostname: boxboat
 
 # http related config
 http:
@@ -14,12 +14,12 @@ https:
   # https port for harbor, default is 443
   port: 443
   # The path of cert and key files for nginx
-  certificate: /your/certificate/path
-  private_key: /your/private/key/path
+  certificate: /var/certs/cert.pem
+  private_key: /var/certs/key.pem
 
 # Uncomment external_url if you want to enable external proxy
 # And when it enabled the hostname will no longer used
-# external_url: https://reg.mydomain.com:8433
+external_url: https://safeharbor.local.hitoma.com
 
 # The initial password of Harbor admin
 # It only works in first time to install harbor

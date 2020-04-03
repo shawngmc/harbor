@@ -10,6 +10,22 @@
 </head>
 
 <body>
+    <div class='bar-global' style="background-color: rgb(255, 255, 0); text-align: center">Testing...</div>
+    <div class='bar-motd' style="background-color: rgb(0, 255, 0); text-align: center">Testing...</div>
+    <script>
+	let loadBanners = function() {
+	    fetch('./message.json')
+              .then(function(response) {
+    		return response.json();
+              })
+              .then(function(messages) {
+                console.log(messages.global);
+		console.log(messages.motd);
+	      });
+	};
+	loadBanners();
+	setInterval(loadBanners, 30000);
+    </script>
     <harbor-app>
         <div class="spinner spinner-lg app-loading">
             Loading...

@@ -12,7 +12,7 @@
             <clr-icon (click)="closeInfo()" class="close-icon" shape="times" size="24"></clr-icon>
         </div>
     </div>
-    <global-message  [isAppLevel]="true"></global-message>
+    <global-message  [isAppLevel]="true">This is a test of the adding a message system.</global-message>
     <navigator (showAccountSettingsModal)="openModal($event)" (showDialogModalAction)="openModal($event)"></navigator>
     <div class="content-container">
         <div class="content-area" [class.container-override]="showSearch"
