@@ -37,7 +37,6 @@ import {AboutDialogComponent} from "../shared/about-dialog/about-dialog.componen
 export const signInStatusNormal = 0;
 export const signInStatusOnGoing = 1;
 export const signInStatusError = -1;
-const remCookieKey = "rem-username";
 const expireDays = 10;
 
 @Component({
@@ -49,9 +48,6 @@ const expireDays = 10;
 export class SignInComponent implements AfterViewChecked, OnInit {
     redirectUrl: string = "";
     appConfig: AppConfig = new AppConfig();
-    // Remeber me indicator
-    rememberMe: boolean = false;
-    rememberedName: string = "";
 
     customLoginBgImg: string;
     customAppTitle: string;
@@ -102,19 +98,9 @@ export class SignInComponent implements AfterViewChecked, OnInit {
         this.route.queryParams
             .subscribe(params => {
                 this.redirectUrl = params["redirect_url"] || "";
-                let isSignUp = params["sign_up"] || "";
-                if (isSignUp !== "") {
-                    this.signUp(); // Open sign up
-                }
             });
 
-        let remUsername = this.cookie.get(remCookieKey);
-        remUsername = remUsername ? remUsername.trim() : "";
-        if (remUsername) {
-            this.signInCredential.principal = remUsername;
-            this.rememberMe = true;
-            this.rememberedName = remUsername;
-        }
+        this.signIn();	    
     }
 
     // App title
@@ -152,32 +138,7 @@ export class SignInComponent implements AfterViewChecked, OnInit {
         return this.appConfig.auth_mode !== CONFIG_AUTH_MODE.LDAP_AUTH && this.appConfig.auth_mode !== CONFIG_AUTH_MODE.UAA_AUTH
             && this.appConfig.auth_mode !== CONFIG_AUTH_MODE.OIDC_AUTH && this.appConfig.auth_mode !== CONFIG_AUTH_MODE.HTTP_AUTH;
     }
-    clickRememberMe($event: any): void {
-        if ($event && $event.target) {
-            this.rememberMe = $event.target.checked;
-            if (!this.rememberMe) {
-                // Remove cookie data
-                this.cookie.remove(remCookieKey);
-                this.rememberedName = "";
-            }
-        }
-    }
-
-    remeberMe(): void {
-        if (this.rememberMe) {
-            if (this.rememberedName !== this.signInCredential.principal) {
-                // Set expire time
-                let expires: number = expireDays * 3600 * 24 * 1000;
-                let date = new Date(Date.now() + expires);
-                let cookieptions: CookieOptions = {
-                    path: "/",
-                    expires: date
-                };
-                this.cookie.put(remCookieKey, this.signInCredential.principal, cookieptions);
-            }
-        }
-    }
-
+    
     // General error handler
     handleError(error: any) {
         // Set error status
@@ -187,38 +148,9 @@ export class SignInComponent implements AfterViewChecked, OnInit {
         console.error("An error occurred when signing in:", message);
     }
 
-    // Hande form values changes
-    formChanged() {
-        if (this.currentForm === this.signInForm) {
-            return;
-        }
-        this.signInForm = this.currentForm;
-        if (this.signInForm) {
-            this.signInForm.valueChanges
-                .subscribe(data => {
-                    this.updateState();
-                });
-        }
-
-    }
-
-    // Fill the new user info into the sign in form
-    handleUserCreation(user: User): void {
-        if (user) {
-            this.currentForm.setValue({
-                "login_username": user.username,
-                "login_password": ""
-            });
-
-        }
-    }
-
     // Implement interface
     // Watch the view change only when view is in error state
     ngAfterViewChecked() {
-        if (this.signInStatus === signInStatusError) {
-            this.formChanged();
-        }
     }
 
     // Update the status if we have done some changes
@@ -230,13 +162,6 @@ export class SignInComponent implements AfterViewChecked, OnInit {
 
     // Trigger the signin action
     signIn(): void {
-        // Should validate input firstly
-        if (!this.isValid) {
-            // Set error status
-            this.signInStatus = signInStatusError;
-            return;
-        }
-
         if (this.isOnGoing) {
             // Ongoing, directly return
             return;
@@ -251,9 +176,6 @@ export class SignInComponent implements AfterViewChecked, OnInit {
                 // Set status
                 // Keep it ongoing to keep the button 'disabled'
                 // this.signInStatus = signInStatusNormal;
-
-                // Remeber me
-                this.remeberMe();
 
                 // Redirect to the right route
                 if (this.redirectUrl === "") {
@@ -275,16 +197,6 @@ export class SignInComponent implements AfterViewChecked, OnInit {
                 }
                 this.handleError(error);
             });
-    }
-
-    // Open sign up dialog
-    signUp(): void {
-        this.signUpDialog.open();
-    }
-
-    // Open forgot password dialog
-    forgotPassword(): void {
-        this.forgotPwdDialog.open();
     }
 
     // Open modal dialog
