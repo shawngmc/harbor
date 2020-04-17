@@ -146,20 +146,6 @@ export class NavigatorComponent implements OnInit {
         });
     }
 
-    // Log out system
-    logOut(): void {
-        // Naviagte to the sign in route
-        // Appending 'signout' means destroy session cache
-        let signout = true;
-        let redirect_url = this.location.pathname;
-        let navigatorExtra: NavigationExtras = {
-            queryParams: {signout, redirect_url}
-        };
-        this.router.navigate([CommonRoutes.EMBEDDED_SIGN_IN], navigatorExtra);
-        // Confirm search result panel is close
-        this.searchTrigger.closeSearch(true);
-    }
-
     // Switch languages
     switchLanguage(lang: string): void {
         let selectedLang: string = enLang; // Default
