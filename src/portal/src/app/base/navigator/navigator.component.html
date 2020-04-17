@@ -21,8 +21,6 @@
               <clr-icon shape="caret down"></clr-icon>
             </button>
             <clr-dropdown-menu [clrPosition]="'bottom-right'" *clrIfOpen>
-                <a href="javascript:void(0)" clrDropdownItem (click)="openAccountSettingsModal()">{{'ACCOUNT_SETTINGS.PROFILE' | translate}}</a>
-                <!--<a *ngIf="canChangePassword" href="javascript:void(0)" clrDropdownItem (click)="openChangePwdModal()">{{'ACCOUNT_SETTINGS.CHANGE_PWD' | translate}}</a>-->
                 <a href="javascript:void(0)" clrDropdownItem (click)="openAboutDialog()">{{'ACCOUNT_SETTINGS.ABOUT' | translate}}</a>
             </clr-dropdown-menu>
         </clr-dropdown>

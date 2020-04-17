@@ -67,13 +67,6 @@ export class NavigatorComponent implements OnInit {
             this.customStyle = customSkinObj;
         }
 
-        this.selectedLang = this.translate.currentLang;
-        this.translate.onLangChange.subscribe((langChange: { lang: string }) => {
-            this.selectedLang = langChange.lang;
-            // Keep in cookie for next use
-            let opt: CookieOptions = { path: '/', expires: new Date(Date.now() + 3600 * 1000 * 24 * 31) };
-            this.cookie.put("harbor-lang", langChange.lang, opt);
-        });
         if (this.appConfigService.isIntegrationMode()) {
             this.appTitle = 'APP_TITLE.VIC';
         }
@@ -110,14 +103,6 @@ export class NavigatorComponent implements OnInit {
             this.appConfigService.getConfig().has_ca_root;
     }
 
-    public get canChangePassword(): boolean {
-        let user = this.session.getCurrentUser();
-        let config = this.appConfigService.getConfig();
-
-        return user && ((config && !(config.auth_mode === "ldap_auth" || config.auth_mode === "uaa_auth"
-        || config.auth_mode === "oidc_auth")) || (user.user_id === 1 && user.username === "admin"));
-    }
-
     matchLang(lang: string): boolean {
         return lang.trim() === this.selectedLang;
     }
@@ -144,18 +129,6 @@ export class NavigatorComponent implements OnInit {
             modalName: modalEvents.ABOUT,
             modalFlag: true
         });
-    }
-
-    // Switch languages
-    switchLanguage(lang: string): void {
-        let selectedLang: string = enLang; // Default
-        if (supportedLangs.find(supportedLang => supportedLang === lang.trim())) {
-            selectedLang = lang;
-        } else {
-            console.error('Language ' + lang.trim() + ' is not suppoted yet');
-        }
-
-        this.translate.use(selectedLang).subscribe(() => window.location.reload());
     }
 
     // Handle the home action
